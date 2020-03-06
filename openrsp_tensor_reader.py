@@ -188,7 +188,7 @@ def read_orsp_tensor_file(fname):
 			curr_ops.append(rline(f))
 
 		# Specification of number of components for each operator
-		keyw_chk(rline(f), 'NUM COMPONENTS')
+		keyw_chk(rline(f), 'NUM_COMPONENTS')
 
 		curr_ncomps = []
 
@@ -293,18 +293,3 @@ for i in range(len(prop_specs)):
 '''
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-		

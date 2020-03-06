@@ -92,8 +92,6 @@ def do_rsp_calc(fname_mol, fname_dal, fname_bin, basdir):
 
 	os.system('export BASDIR=' + basdir)
 
-	os.system('echo $BASDIR')
-
 	os.system(fname_bin)
 
 	prop, tensor = read_orsp_tensor_file('rsp_tensor')

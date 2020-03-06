@@ -37,6 +37,7 @@ from numdiff_utils import perform_num_diff_and_compare
 # Name of mol file of system 
 # Must be a valid LSDalton mol file and must be identical to the mol file which was used to calculate the reference data
 # Units of atom coordinates must be bohr
+# Cannot be 'MOLECULE.INP' or 'numdiff_geo.mol' as these names are used by routines invoked by this script
 fname_mol = 'MOLECULE.mol'
 
 # Name of dal file to calculate the test property
