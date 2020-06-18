@@ -1,3 +1,6 @@
+# This file is part of openrsp-numdiff-scripts.
+# openrsp-numdiff-scripts is made available under an LGPL license.
+
 import numpy as np
 import copy
 import os

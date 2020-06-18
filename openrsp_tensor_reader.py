@@ -1,9 +1,12 @@
+# This file is part of openrsp-numdiff-scripts.
+# openrsp-numdiff-scripts is made available under an LGPL license.
+
+# All code in this file is from the SpectroscPy script package (https://gitlab.com/kdu002/SpectroscPy and https://pypi.org/project/SpectroscPy/) in verbatim or near-verbatim form. See README.md for more information.
+
 import numpy as np
 import copy
 import itertools
 import re
-
-# All code in this file from the SpectroscPy script package (https://gitlab.com/kdu002/SpectroscPy and https://pypi.org/project/SpectroscPy/) in verbatim or near-verbatim form. See README.md for more information.
 
 # Class to hold information about a response property
 class rspProperty:
