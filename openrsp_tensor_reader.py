@@ -3,6 +3,8 @@ import copy
 import itertools
 import re
 
+# All code in this file from the SpectroscPy script package (https://gitlab.com/kdu002/SpectroscPy and https://pypi.org/project/SpectroscPy/) in verbatim or near-verbatim form. See README.md for more information.
+
 # Class to hold information about a response property
 class rspProperty:
 
@@ -271,25 +273,5 @@ def read_orsp_tensor_file(fname):
 			rsp_tensors.append(curr_tensor)
 
 	return rsp_prop_specs, rsp_tensors
-
-
-'''
-# Below is a test program to demonstrate the functionality: Change or remove as necessary
-
-prop_specs, tensors = read_orsp_tensor_file('hf_HF.rsp_tensor')
-
-for i in range(len(prop_specs)):
-
-	print 'Property', i + 1
-
-	prop_specs[i].tellProp()
-	
-	print 'Property tensor:'
-
-	print tensors[i]
-
-	print ' ' 
-
-'''
 
 

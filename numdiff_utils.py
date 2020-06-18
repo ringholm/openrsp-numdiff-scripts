@@ -3,7 +3,7 @@ import copy
 import os
 from openrsp_tensor_reader import *
 
-
+# This routine is from the SpectroscPy script package (https://gitlab.com/kdu002/SpectroscPy and https://pypi.org/project/SpectroscPy/) in verbatim or near-verbatim form. See README.md for more information.
 # Read a(n) (LS)Dalton mol file and return the information needed to write a corresponding file later on with write_mol
 def read_mol(fname):
 
@@ -49,6 +49,7 @@ def read_mol(fname):
 
 	return basis_set, num_atomtypes, num_atoms_per_type, charges_per_type, coords
 
+# This routine is from or is inspired by code in the SpectroscPy script package (https://gitlab.com/kdu002/SpectroscPy and https://pypi.org/project/SpectroscPy/). See README.md for more information.
 # Generate a(n) (LS)Dalton mol file fname based on provided information
 # Will overwrite fname if it already exists
 # Will use nosymmetry flag
@@ -107,6 +108,7 @@ def do_rsp_calc(fname_mol, fname_dal, fname_bin, basdir):
 	# Result tensor from higher-order calculation fname_ref
 	# Path to binary fname_bin
 	# Path to basis set directory basdir
+	# Stencil extent stencil_np to choose between various stencil formulas (currently 2-point and 7-point supported)
 	# Displacement d to use for numerical differentiation (default = 0.001 bohr)
 def perform_num_diff_and_compare(fname_mol, fname_dal, fname_ref, fname_bin, basdir, stencil_np, d=0.001):
 
@@ -189,7 +191,6 @@ def perform_num_diff_and_compare(fname_mol, fname_dal, fname_ref, fname_bin, bas
 
 				print('ERROR: Stencil extent ', stencil_np, ' not supported')
 
-			
 	tensor_diff = tensor_ref - tensor_cmp
 
 	return np.amax(tensor_ref), np.amax(abs(tensor_diff)), tensor_ref, tensor_cmp, tensor_diff
