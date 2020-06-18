@@ -108,7 +108,7 @@ def do_rsp_calc(fname_mol, fname_dal, fname_bin, basdir):
 	# Path to binary fname_bin
 	# Path to basis set directory basdir
 	# Displacement d to use for numerical differentiation (default = 0.001 bohr)
-def perform_num_diff_and_compare(fname_mol, fname_dal, fname_ref, fname_bin, basdir, d=0.001):
+def perform_num_diff_and_compare(fname_mol, fname_dal, fname_ref, fname_bin, basdir, stencil_np, d=0.001):
 
 	fname_mol_chg = 'numdiff_geo.mol'
 
@@ -130,26 +130,64 @@ def perform_num_diff_and_compare(fname_mol, fname_dal, fname_ref, fname_bin, bas
 
 		for j in range(3):
 
-			new_coords = copy.deepcopy(coords)
+			if (stencil_np == 2):
 
-			# Make positive displacement and write altered mol file
-			new_coords[i][j] += d
-			write_mol(fname_mol_chg, basis_set, num_atomtypes, num_atoms_per_type, charges_per_type, new_coords)
+				new_coords = copy.deepcopy(coords)
 
-			# Do response calculation with positively displaced geometry and get tensor
-			tensor_p = do_rsp_calc(fname_mol_chg, fname_dal, fname_bin, basdir)
+				# Make positive displacement, write altered mol file, do rsp calculation
+				new_coords[i][j] += d
+				write_mol(fname_mol_chg, basis_set, num_atomtypes, num_atoms_per_type, charges_per_type, new_coords)
+				tensor_p1 = do_rsp_calc(fname_mol_chg, fname_dal, fname_bin, basdir)
 
-			# Make negative (double to counteract positive) displacement and write altered mol file
-			new_coords[i][j] -= 2.0*d
-			write_mol(fname_mol_chg, basis_set, num_atomtypes, num_atoms_per_type, charges_per_type, new_coords)
+				# Step down twice to negative displacement
+				new_coords[i][j] -= 2.0*d
+				write_mol(fname_mol_chg, basis_set, num_atomtypes, num_atoms_per_type, charges_per_type, new_coords)
+				tensor_m1 = do_rsp_calc(fname_mol_chg, fname_dal, fname_bin, basdir)
 
-			# Do response calculation with negatively displaced geometry and get tensor
-			tensor_m = do_rsp_calc(fname_mol_chg, fname_dal, fname_bin, basdir)
+				# Put num diff result in comparison tensor
+				tensor_cmp[acc_coord:acc_coord+1,:] = (tensor_p1/2.0 - tensor_m1/2.0)/d
 
-			# Put num diff result in comparison tensor
-			tensor_cmp[acc_coord:acc_coord+1,:] = (tensor_p - tensor_m)/(2.0 * d)
+				acc_coord +=1
 
-			acc_coord +=1
+			elif (stencil_np == 7):
+
+				new_coords = copy.deepcopy(coords)
+
+				# Make 3x positive displacement, write altered mol file, do rsp calculation
+				new_coords[i][j] += 3.0 *d
+				write_mol(fname_mol_chg, basis_set, num_atomtypes, num_atoms_per_type, charges_per_type, new_coords)
+				tensor_p3 = do_rsp_calc(fname_mol_chg, fname_dal, fname_bin, basdir)
+
+				# Walk down displacements in succession for rest of stencil
+				new_coords[i][j] -= d
+				write_mol(fname_mol_chg, basis_set, num_atomtypes, num_atoms_per_type, charges_per_type, new_coords)
+				tensor_p2 = do_rsp_calc(fname_mol_chg, fname_dal, fname_bin, basdir)
+
+				new_coords[i][j] -= d
+				write_mol(fname_mol_chg, basis_set, num_atomtypes, num_atoms_per_type, charges_per_type, new_coords)
+				tensor_p1 = do_rsp_calc(fname_mol_chg, fname_dal, fname_bin, basdir)
+
+				# Jump two steps here to skip the undisplaced
+				new_coords[i][j] -= 2.0*d
+				write_mol(fname_mol_chg, basis_set, num_atomtypes, num_atoms_per_type, charges_per_type, new_coords)
+				tensor_m1 = do_rsp_calc(fname_mol_chg, fname_dal, fname_bin, basdir)
+
+				new_coords[i][j] -= d
+				write_mol(fname_mol_chg, basis_set, num_atomtypes, num_atoms_per_type, charges_per_type, new_coords)
+				tensor_m2 = do_rsp_calc(fname_mol_chg, fname_dal, fname_bin, basdir)
+
+				new_coords[i][j] -= d
+				write_mol(fname_mol_chg, basis_set, num_atomtypes, num_atoms_per_type, charges_per_type, new_coords)
+				tensor_m3 = do_rsp_calc(fname_mol_chg, fname_dal, fname_bin, basdir)
+
+				# Put num diff result in comparison tensor
+				tensor_cmp[acc_coord:acc_coord+1,:] = (tensor_p3/60.0 - tensor_p2*(3.0/20.0) + tensor_p1*(3.0/4.0) - tensor_m1*(3.0/4.0) + tensor_m2*(3.0/20.0) - tensor_m3/60.0)/(d)
+
+				acc_coord +=1
+
+			else:
+
+				print('ERROR: Stencil extent ', stencil_np, ' not supported')
 
 			
 	tensor_diff = tensor_ref - tensor_cmp

@@ -56,6 +56,9 @@ fname_bin = '/home/this_user/software/lsdalton/build/lsdalton.x'
 # Full path to basis set directory
 basdir = '/home/this_user/software/lsdalton/basis'
 
+# Number of points to use in stencil: Available choices are 2 and 7 (7 takes three times longer but is more accurate)
+stencil_np = 2
+
 # Geometric displacement (in bohr) to be used in numerical differentiation
 # Different choices of this displacement may be suitable in different situations: As a rule of thumb, a displacement
 # of 0.001 bohr has been seen to perform decently well
@@ -66,28 +69,28 @@ print(' ')
 
 # End of parameter section
 
-ref_max, max_diff, ref_tensor, num_tensor, diff_tensor = numdiff_utils.perform_num_diff_and_compare(fname_mol, fname_dal, fname_ref, fname_bin, basdir, d)
+ref_max, max_diff, ref_tensor, num_tensor, diff_tensor = perform_num_diff_and_compare(fname_mol, fname_dal, fname_ref, fname_bin, basdir, stencil_np, d)
 
 print(' ')
 print('Numerical differentiation completed')
 print(' ')
 print('RESULTS')
 print(' ')
-print('Maximum absolute value in reference data array:', np.amax(abs(tensor_ref)))
-print('Maximum absolute difference between reference and and num diff data:', np.amax(abs(tensor_diff)))
+print('Maximum absolute value in reference data array:', np.amax(abs(ref_tensor)))
+print('Maximum absolute difference between reference and and num diff data:', np.amax(abs(diff_tensor)))
 print(' ')
-print('Reference tensor:')tensor_ref
+print('Reference tensor:', ref_tensor)
 print(' ')
-print(tensor_ref)
+print(ref_tensor)
 print(' ')
 print(' ')
 print('Tensor found by numerical differentiation:')
 print(' ')
-print(tensor_cmp)
+print(num_tensor)
 print(' ')
 print(' ')
 print('Difference between reference and num. diff. tensors')
 print(' ')
-print(tensor_diff)
+print(diff_tensor)
 print(' ')
 print('End of program')
